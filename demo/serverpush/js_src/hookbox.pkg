@@ -1,0 +1,6 @@
+{
+    "root": "hookbox",
+    "transports": ["csp", "websocket"],
+    "environments": ["browser"],
+    "additional_dependancies": [ ]
+}

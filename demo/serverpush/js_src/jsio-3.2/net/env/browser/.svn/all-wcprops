@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/env/browser
+END
+networkConsole.html
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/env/browser/networkConsole.html
+END
+csp.js
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/env/browser/csp.js
+END
+websocket.js
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/env/browser/websocket.js
+END
+postmessage.js
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/env/browser/postmessage.js
+END

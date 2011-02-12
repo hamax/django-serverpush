@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/protocols
+END
+echo.js
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/protocols/echo.js
+END
+mspp.js
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/protocols/mspp.js
+END
+rtjp.js
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/protocols/rtjp.js
+END
+delimited.js
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/protocols/delimited.js
+END
+buffered.js
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/protocols/buffered.js
+END
+stomp.js
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/putka/!svn/ver/264/trunk/ui/serverpush/js_src/jsio-3.2/net/protocols/stomp.js
+END
