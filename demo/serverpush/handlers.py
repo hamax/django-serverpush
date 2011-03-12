@@ -32,6 +32,7 @@ class EventTracker():
 		request.method = 'GET'
 		request.GET = conn.GET
 		request.COOKIES = conn.cookies
+		request.META['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest' # request.is_ajax() returns True
 	
 		# auth
 		request.session = {}
