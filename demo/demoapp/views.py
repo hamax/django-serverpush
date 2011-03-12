@@ -17,7 +17,7 @@ def list(request):
 	hits = data.counter
 	return render_to_response('demoapp/list.html', locals(), context_instance = RequestContext(request))
 
-def list_update(user, session, GET):
+def list_update(request):
 	# name: just gets forwarded to javascript clients
 	# model: the model that you want to watch
 	# params: the filter params - for witch objects you want to be notified

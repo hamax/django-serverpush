@@ -11,6 +11,7 @@ import time
 
 from django.core.urlresolvers import resolve
 from django.contrib.sessions.backends.db import SessionStore
+from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
 
@@ -24,13 +25,20 @@ class EventTracker():
 	# Called by protocol.py via server.py on a new connection
 	# subscribing to channels
 	def connect(self, conn):
+		request = HttpRequest()
+		request.path = conn.url
+		request.path_info = conn.url #TODO: path_info is not always full path
+		request.method = 'GET'
+		request.GET = conn.GET
+		request.COOKIES = conn.cookies
+	
 		# auth
-		session = {}
-		user = AnonymousUser()
+		request.session = {}
+		request.user = AnonymousUser()
 		if conn.cookie_id:
-			session = SessionStore(session_key = conn.cookie_id)
-			if '_auth_user_id' in session:
-				user = User.objects.get(id = session['_auth_user_id'])			
+			request.session = SessionStore(session_key = conn.cookie_id)
+			if '_auth_user_id' in request.session:
+				request.user = User.objects.get(id = request.session['_auth_user_id'])			
 			
 		filters = []
 		
@@ -44,7 +52,7 @@ class EventTracker():
 			func = None
 			
 		if func: # if function _update is defined
-			filters += func(user, session, conn.GET, *args, **kwargs)
+			filters += func(request, *args, **kwargs)
 		
 		for filter in filters:
 			# resolve model to string
