@@ -73,6 +73,8 @@ class HookboxConn(object):
 			return self.send_error(fid, "Already logged in")
 		if 'url' not in fargs:
 			raise ExpectedException("Missing url")
+		if 'timestamp' not in fargs:
+			raise ExpectedException("Missing timestamp")
 		
 		if 'cookie_string' in fargs:
 			self.cookie_string = fargs['cookie_string']
