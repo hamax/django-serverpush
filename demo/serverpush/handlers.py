@@ -14,6 +14,7 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
+from django.utils import translation
 
 #
 # The main class for event tracking
@@ -60,7 +61,7 @@ class EventTracker():
 			# create a new channel for this model
 			if model not in self.channels: self.channels[model] = Channel()
 			# add filter to the channel
-			self.channels[model].newFilter(conn, filter)
+			self.channels[model].newFilter(conn, request, filter)
 	
 	# Called by protocol.py via server.py on disconnect
 	# unsubscribing from channels
@@ -99,9 +100,9 @@ class Channel():
 	
 	# filter in this contex is actually a connection
 	# ... but there can be more filters for same connections
-	def newFilter(self, conn, filter):
+	def newFilter(self, conn, request, filter):
 		if conn.id not in self.connections: self.connections[conn.id] = []
-		filter = {'name':filter['name'], 'params':filter['params'], 'serializer':filter.get('serializer', extract), 'data':filter['data'], 'conn':conn}
+		filter = {'name':filter['name'], 'params':filter['params'], 'serializer':filter.get('serializer', extract), 'data':filter['data'], 'conn':conn, 'request':request}
 		self.connections[conn.id].append(filter)
 		self.sendHistory(filter)
 	
@@ -113,7 +114,7 @@ class Channel():
 		for conn in self.connections:
 			for filter in self.connections[conn]:
 				if object.filter(**filter['params']).exists():
-					buffer.append(filter['conn'], {'name':filter['name'], 'payload':filter['serializer'](object[0], filter['data'])})
+					buffer.append(filter['conn'], self.serialize(filter, object))
 		buffer.send()
 		
 		return True
@@ -130,8 +131,14 @@ class Channel():
 		for i in range(start, len(self.history)):
 			object = self.history[i][1]
 			if object.filter(**filter['params']).exists():
-				buffer.append(filter['conn'], {'name':filter['name'], 'payload':filter['serializer'](object[0], filter['data'])})
+				buffer.append(filter['conn'], self.serialize(filter, object))
 		buffer.send()
+	
+	# Called by event and sendHistory
+	# serializes data (calls the serializer with right parameters)
+	def serialize(self, filter, object):
+		translation.activate(translation.get_language_from_request(filter['request']))
+		return {'name':filter['name'], 'payload':filter['serializer'](filter['request'], object[0], filter['data'])}
 
 #
 # Buffer to send all of the notifications at once - prevents race conditions
@@ -148,7 +155,7 @@ class SendBuffer():
 			package[0].send_frame('EVENT', package[1])
 
 # Default serializer for data from database
-def extract(object, fields):
+def extract(request, object, fields):
 	data = {}
 	for field in fields:
 		data[field] = eval(fields[field])
