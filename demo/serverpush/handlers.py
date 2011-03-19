@@ -9,6 +9,7 @@ from bisect import bisect_left
 import urllib
 import time
 
+from django.conf import settings
 from django.core.urlresolvers import resolve
 from django.contrib.sessions.backends.db import SessionStore
 from django.http import HttpRequest
@@ -22,6 +23,10 @@ from django.utils import translation
 class EventTracker():
 	def __init__(self):
 		self.channels = {}
+		
+		self.globals = []
+		for func_path in settings.SERVERPUSH_GLOBALS:
+			self.globals.append(getattr(__import__(func_path.rsplit('.', 1)[0], globals(), locals(), [func_path.rsplit('.', 1)[-1]]), func_path.rsplit('.', 1)[-1]))
 	
 	# Called by protocol.py via server.py on a new connection
 	# subscribing to channels
@@ -41,8 +46,11 @@ class EventTracker():
 			request.session = SessionStore(session_key = conn.cookie_id)
 			if '_auth_user_id' in request.session:
 				request.user = User.objects.get(id = request.session['_auth_user_id'])			
-			
+		
+		# get global filters
 		filters = []
+		for func in self.globals:
+			filters += func(request)
 		
 		# url resolve
 		func, args, kwargs = resolve(conn.url)
@@ -172,7 +180,7 @@ def ping_notifier(model, pk = None):
 	
 	# call the notifier via http request
 	try:
-		urllib.urlopen('http://localhost:8014/%s/%s' % (model.__module__ + '.' + model.__name__, pk))
+		urllib.urlopen('http://localhost:%d/%s/%s' % (settings.SERVERPUSH_NOTIFIER_PORT, model.__module__ + '.' + model.__name__, pk))
 		return True
 	except IOError:
 		return False

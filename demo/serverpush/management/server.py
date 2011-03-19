@@ -13,6 +13,8 @@ from protocol import HookboxConn
 from notify import HookboxNotify
 from error import ExpectedException
 
+from django.conf import settings
+
 from demo.serverpush.handlers import EventTracker
 
 eventlet.monkey_patch(all = False, socket = True, select = True)
@@ -50,8 +52,8 @@ class HookboxServer(object):
 		self._accept(rtjp_conn)
 
 	def run(self):
-		self._bound_socket = eventlet.listen(('0.0.0.0', 8013)) #TODO: read from config
-		self._bound_notify_socket = eventlet.listen(('127.0.0.1', 8014))
+		self._bound_socket = eventlet.listen(('0.0.0.0', settings.SERVERPUSH_PORT))
+		self._bound_notify_socket = eventlet.listen(('127.0.0.1', settings.SERVERPUSH_NOTIFIER_PORT))
 		
 		eventlet.spawn(eventlet.wsgi.server, self._bound_socket, self._root_wsgi_app, log=EmptyLogShim())
 		eventlet.spawn(eventlet.wsgi.server, self._bound_notify_socket, self._notify_wsgi_app, log=EmptyLogShim())

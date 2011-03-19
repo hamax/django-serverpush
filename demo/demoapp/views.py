@@ -23,3 +23,7 @@ def list_update(request):
 	# params: the filter params - for witch objects you want to be notified
 	# data: data to pass to the serializer, the default one takes list of fields
 	return [{'name':'update', 'model':Data, 'params':{}, 'data':{'hits':'object.counter'}}]
+	
+def update(request):
+	return [{'name':'global', 'model':Data, 'params':{}, 'data':{'hits':'object.counter'}}]
+
