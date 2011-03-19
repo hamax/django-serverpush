@@ -73,17 +73,35 @@ HookBoxProtocol = Class([RTJPProtocol], function(supr) {
 	}
 	
 	this._connectionLost = function(transportName, reason, wasConnected) {
+		var reconnect = false;
 		if (!wasConnected) {
 			logger.debug('connectionFailed', transportName)
 			if (transportName == 'websocket') {
 				logger.debug('retry with csp');
 				this.connectionLost = bind(this, '_connectionLost', 'csp');
 				jsioConnect(this, 'csp', {url: this.url + 'csp'})
+			} else {
+				reconnect = true;
 			}
 		} else {
 			logger.debug('connectionLost');
 			this.connected = false;
 			this.onClose();
+			reconnect = true;
+		}
+		
+		if (reconnect) {
+			logger.debug('reconnecting in 30s');
+			var p = this;
+			setTimeout(function() {
+				if (window.WebSocket) {
+					jsioConnect(p, 'websocket', {url: p.url.replace('http://', 'ws://') + 'ws' });
+					p.connectionLost = bind(p, '_connectionLost', 'websocket');
+				} else {
+					jsioConnect(p, 'csp', {url: p.url + 'csp'})
+					p.connectionLost = bind(p, '_connectionLost', 'csp');
+				}
+			}, 30000);
 		}
 	}
 
