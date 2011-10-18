@@ -1,0 +1,19 @@
+{% load i18n %}
+<html>
+	<head>
+		<title>django-serverpush demo</title>
+		<script type="text/javascript" src="/static/jquery-1.6.4.js"></script>
+		<script type="text/javascript" src="/static/socket.io.js"></script>
+		<script type="text/javascript" src="/static/serverpush.js"></script>
+		<script type="text/javascript" src="/static/counter.js"></script>
+	</head>
+	<body>
+		<div>
+			<b>Hits:</b>
+			<div id="hits">{{ hits }}</div>
+			<b>Page generated at:</b>
+			<div id="generated_timestamp">{{ generated_timestamp }}</div>
+		</div>
+	</body>
+</html>
+

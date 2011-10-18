@@ -1,3 +1,0 @@
-exports.UIWatcher = Class(function() {
-	
-});
