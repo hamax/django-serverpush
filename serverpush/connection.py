@@ -41,8 +41,8 @@ class Connection(tornadio.SocketConnection):
 			self.request.user = AnonymousUser()
 			if 'sessionid' in self.request.COOKIES:
 				self.request.session = SessionStore(session_key = self.request.COOKIES['sessionid'])
-				if '_auth_user_id' in request.session:
-					self.request.user = User.objects.get(id = request.session['_auth_user_id'])
+				if '_auth_user_id' in self.request.session:
+					self.request.user = User.objects.get(id = self.request.session['_auth_user_id'])
 
 			self.handshake = False
 			self.tracker.connect(self)

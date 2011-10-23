@@ -1,5 +1,5 @@
 $(window).load(function() {
-	var s = new io.Socket(window.location.hostname, {port: 8013, rememberTransport: true});
+	var s = new io.Socket(window.location.hostname, {port: 8013, rememberTransport: true, transports: ['websocket', 'xhr-multipart', 'xhr-polling', 'htmlfile']});
 	s.connect();
 
 	s.addEvent('connect', function() {

@@ -18,16 +18,17 @@ class Command(BaseCommand):
 		Connection.tracker = Notifier.tracker = Tracker()
 
 		# use the routes classmethod to build the correct resource
-		router = tornadio.get_router(Connection)
+		router = tornadio.get_router(Connection,
+			{'enabled_protocols': [
+				'websocket',
+				'xhr-multipart',
+				'xhr-polling',
+				'htmlfile'
+			]})
 
 		# configure the Tornado application
 		application = tornado.web.Application(
 			[(r"/", Notifier), router.route()],
-			enabled_protocols = [
-				'websocket',
-				'xhr-multipart',
-				'xhr-polling'
-			],
 			socket_io_port = settings.SERVERPUSH_PORT
 		)
 
