@@ -26,7 +26,7 @@ setup(
 	scripts = [],
 	url = 'http://github.com/hamax/django-serverpush/',
 	license = license,
-	description = 'Simple to use django serverpush solution',
+	description = 'Easy to use django server push solution',
 	long_description = readme,
 	requires = ['tornadio', 'django'],
 	install_requires = [
