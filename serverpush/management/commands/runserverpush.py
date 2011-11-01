@@ -28,9 +28,14 @@ class Command(BaseCommand):
 
 		# configure the Tornado application
 		application = tornado.web.Application(
-			[(r"/", Notifier), router.route()],
+			[router.route()],
 			socket_io_port = settings.SERVERPUSH_PORT
 		)
+
+		notifier = tornado.web.Application(
+			[(r"/notify", Notifier)],
+		)
+		notifier.listen(settings.SERVERPUSH_NOTIFIER_PORT, 'localhost')
 
 		try:
 			tornadio.server.SocketServer(application)

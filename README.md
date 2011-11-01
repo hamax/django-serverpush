@@ -86,9 +86,10 @@ Installation
 
     Add "serverpush" to INSTALLED_APPS and
     "serverpush.client.context_processor" to TEMPLATE_CONTEXT_PROCESSORS.
-    Also add two constants:
+    Also add the following constants:
 
         SERVERPUSH_PORT = 8013
+        SERVERPUSH_NOTIFIER_PORT = 8014
         SERVERPUSH_GLOBALS = ()
 
 3. Add a timestamp div to your template (for history to work)

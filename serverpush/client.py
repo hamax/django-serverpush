@@ -15,9 +15,14 @@ def ping_notifier(model, pk = None):
 		pk = model.pk
 		model = model.__class__
 
+	data = {
+		'model': model.__module__ + '.' + model.__name__,
+		'id': pk
+	}
+
 	# call the notifier via http request
 	try:
-		urllib.urlopen('http://localhost:%d?model=%s&id=%s' % (settings.SERVERPUSH_PORT, model.__module__ + '.' + model.__name__, pk))
+		urllib.urlopen('http://localhost:%d/notify' % settings.SERVERPUSH_NOTIFIER_PORT, urllib.urlencode(data))
 		return True
 	except IOError:
 		return False
