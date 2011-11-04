@@ -1,17 +1,16 @@
 $(window).load(function() {
-	var s = new io.Socket(window.location.hostname, {port: 8013, rememberTransport: true});
-	s.connect();
+	var s = io.connect('http://' + window.location.hostname + ':8013', {rememberTransport: true, transports: ['websocket', 'xhr-polling', 'htmlfile']});
 
-	s.addEvent('connect', function() {
-		s.send({
+	s.on('connect', function() {
+		s.emit('login', {
 			'cookies': document.cookie,
 			'url': document.location.pathname,
 			'GET': document.location.search,
 			'timestamp': $('#generated_timestamp').html()
-			});
+		});
 	});
 
-	s.addEvent('message', function(data) {
+	s.on('message', function(data) {
 		$(document).trigger('serverpush_' + data.name, data.payload);
 	});
 });

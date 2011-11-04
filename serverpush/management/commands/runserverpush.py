@@ -1,9 +1,10 @@
+import logging
 from os import path as op
 
 import tornado.web
-import tornadio
-import tornadio.router
-import tornadio.server
+import tornadio2
+import tornadio2.router
+import tornadio2.server
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -18,17 +19,17 @@ class Command(BaseCommand):
 		Connection.tracker = Notifier.tracker = Tracker()
 
 		# use the routes classmethod to build the correct resource
-		router = tornadio.get_router(Connection,
-			{'enabled_protocols': [
+		router = tornadio2.router.TornadioRouter(Connection, {
+			'enabled_protocols': [
 				'websocket',
-				'xhr-multipart',
 				'xhr-polling',
 				'htmlfile'
-			]})
+			]
+		})
 
 		# configure the Tornado application
 		application = tornado.web.Application(
-			[router.route()],
+			router.urls,
 			socket_io_port = settings.SERVERPUSH_PORT
 		)
 
@@ -38,6 +39,7 @@ class Command(BaseCommand):
 		notifier.listen(settings.SERVERPUSH_NOTIFIER_PORT, 'localhost')
 
 		try:
-			tornadio.server.SocketServer(application)
+			logging.getLogger().setLevel(logging.DEBUG)
+			tornadio2.server.SocketServer(application)
 		except KeyboardInterrupt:
 			print "Ctr+C pressed; Exiting."

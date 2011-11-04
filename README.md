@@ -7,7 +7,7 @@ Requirements
 ------------
 
 * Django
-* Tornadio
+* Tornadio2
 
 Introduction
 ------------
@@ -99,6 +99,23 @@ Installation
         </div>
 
 4. Run it by calling ./manage.py runserverpush
+
+Running Demo
+------------
+
+1. Create sqlite file
+
+        ./manage.py syncdb
+
+2. Run django development server
+
+        ./manage.py runserver
+
+3. Run serverpush server
+
+        ./manage.py runserverpush
+
+4. Navigate to localhost:8000 in multiple browsers/windows/tabs and observe the counter
 
 Browser support
 ---------------

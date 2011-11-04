@@ -19,7 +19,7 @@ except:
 
 setup(
 	name = 'django-serverpush',
-	version = '2.0.0',
+	version = '2.1.0',
 	author = 'Ziga Ham',
 	author_email = 'ziga.ham@gmail.com',
 	packages = ['serverpush', 'serverpush.management', 'serverpush.management.commands'],
@@ -28,9 +28,9 @@ setup(
 	license = license,
 	description = 'Easy to use django server push solution',
 	long_description = readme,
-	requires = ['tornadio', 'django'],
+	requires = ['tornadio2', 'django'],
 	install_requires = [
-		'tornadio == 0.0.4',
+		'tornadio2 >= 0.0.1',
 		'django >= 1.0.0'
 	]
 )

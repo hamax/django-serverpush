@@ -2,22 +2,22 @@
 	Tornadio connection.
 '''
 
-import tornadio
+import json
+
+import tornadio2
 
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.backends.db import SessionStore
 
-class Connection(tornadio.SocketConnection):
+class Connection(tornadio2.SocketConnection):
 	def __init__(self, *args, **kwargs):
 		super(Connection, self).__init__(*args, **kwargs)
 		self.handshake = True
 
-	def on_open(self, *args, **kwargs):
-		pass
-
-	def on_message(self, message):
+	@tornadio2.event('login')
+	def login(self, **message):
 		if not self.handshake:
 			pass
 		else:
