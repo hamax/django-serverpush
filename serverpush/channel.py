@@ -40,7 +40,7 @@ class Channel():
 		if not filter['conn'].timestamp:
 			return
 
-		if len(self.history) == self.maxsize and self.history[0]['timestamp'] > filter['conn'].timestamp:
+		if len(self.history) == self.maxsize and self.history[0][0] > filter['conn'].timestamp:
 			filter['conn'].send({'name':'refresh'}) #history has failed us
 			return
 
