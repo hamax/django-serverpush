@@ -47,6 +47,10 @@ class Connection(tornadio2.SocketConnection):
 			self.handshake = False
 			self.tracker.connect(self)
 
+	@tornadio2.event('stats')
+	def stats(self):
+  		return self.session.server.stats.dump()
+
 	def on_close(self):
 		if not self.handshake:
 			self.tracker.disconnect(self)

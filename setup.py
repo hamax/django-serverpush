@@ -30,7 +30,7 @@ setup(
 	long_description = readme,
 	requires = ['tornadio2', 'django'],
 	install_requires = [
-		'tornadio2 >= 0.0.1',
+		'tornadio2 >= 0.0.2',
 		'django >= 1.0.0'
 	]
 )

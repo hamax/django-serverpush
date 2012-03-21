@@ -39,7 +39,9 @@ class Command(BaseCommand):
 		notifier.listen(settings.SERVERPUSH_NOTIFIER_PORT, 'localhost')
 
 		try:
-			logging.getLogger().setLevel(logging.DEBUG)
+			if settings.SERVERPUSH_LOG:
+				logging.getLogger().addHandler(logging.FileHandler(settings.SERVERPUSH_LOG))
+			logging.getLogger().setLevel(logging.ERROR)
 			tornadio2.server.SocketServer(application)
 		except KeyboardInterrupt:
 			print "Ctr+C pressed; Exiting."
