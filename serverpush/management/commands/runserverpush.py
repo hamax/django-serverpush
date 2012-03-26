@@ -13,6 +13,8 @@ from serverpush.connection import Connection
 from serverpush.notifier import Notifier
 from serverpush.tracker import Tracker
 
+logger = logging.getLogger('serverpush')
+
 class Command(BaseCommand):
 	def handle(self, *args, **options):
 		# set tracker object
@@ -38,10 +40,18 @@ class Command(BaseCommand):
 		)
 		notifier.listen(settings.SERVERPUSH_NOTIFIER_PORT, 'localhost')
 
-		try:
-			if settings.SERVERPUSH_LOG:
-				logging.getLogger().addHandler(logging.FileHandler(settings.SERVERPUSH_LOG))
-			logging.getLogger().setLevel(logging.ERROR)
-			tornadio2.server.SocketServer(application)
-		except KeyboardInterrupt:
-			print "Ctr+C pressed; Exiting."
+		# configure Tornadio log, serverpush log is configured in settings.py
+		if settings.TORNADIO_LOG:
+			handler = logging.FileHandler(settings.TORNADIO_LOG)
+			handler.setFormatter(logging.Formatter('%(asctime)-6s:  %(levelname)s - %(message)s'))
+			logging.getLogger().addHandler(handler)
+		logging.getLogger().setLevel(logging.WARNING)
+
+		while True:
+			try:
+				tornadio2.server.SocketServer(application)
+			except KeyboardInterrupt:
+				print "Ctr+C pressed; Exiting."
+				break
+			except Exception, e:
+				logger.exception('%s', e)

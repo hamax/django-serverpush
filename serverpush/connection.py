@@ -11,12 +11,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.backends.db import SessionStore
 
+from exceptions import catch_exceptions
+
 class Connection(tornadio2.SocketConnection):
 	def __init__(self, *args, **kwargs):
 		super(Connection, self).__init__(*args, **kwargs)
 		self.handshake = True
 
 	@tornadio2.event('login')
+	@catch_exceptions
 	def login(self, **message):
 		if not self.handshake:
 			pass
@@ -51,6 +54,7 @@ class Connection(tornadio2.SocketConnection):
 	def stats(self):
   		return self.session.server.stats.dump()
 
+	@catch_exceptions
 	def on_close(self):
 		if not self.handshake:
 			self.tracker.disconnect(self)

@@ -21,7 +21,7 @@ DATABASES = {
 }
 
 # Serverpush settings!
-SERVERPUSH_LOG = None # filename or None - terminal
+TORNADIO_LOG = None # filename or None - console
 SERVERPUSH_PORT = 8013
 SERVERPUSH_NOTIFIER_PORT = 8014
 SERVERPUSH_GLOBALS = (
@@ -99,5 +99,9 @@ LOGGING = {
 			'level': 'ERROR',
 			'propagate': True,
 		},
+		'serverpush': {
+			'handlers': ['mail_admins'],
+			'level': 'ERROR',
+		}
 	}
 }
