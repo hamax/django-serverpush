@@ -30,13 +30,12 @@ class Tracker():
 		for func in self.globals:
 			filters += func(conn.request)
 
-		# url resolve
-		func, args, kwargs = resolve(conn.request.path)
-
-		# get _update function
 		try:
+			# url resolve
+			func, args, kwargs = resolve(conn.request.path)
+			# get _update function
 			func = getattr(__import__(func.__module__, globals(), locals(), [func.__name__ + '_update']), func.__name__ + '_update')
-		except:
+		except: #TODO: catch only 404 and failed import
 			func = None
 
 		if func: # if function _update is defined

@@ -54,4 +54,4 @@ class Command(BaseCommand):
 				print "Ctr+C pressed; Exiting."
 				break
 			except Exception, e:
-				logger.exception('%s', e)
+				logger.exception(e)

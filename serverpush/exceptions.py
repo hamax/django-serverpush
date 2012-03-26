@@ -14,5 +14,6 @@ def catch_exceptions(func):
 			connection.connection = None
 			raise
 		except Exception, e:
-			logger.exception('%s', e)
+			logger.exception(e)
+			raise
 	return wrapper
