@@ -47,11 +47,9 @@ class Command(BaseCommand):
 			logging.getLogger().addHandler(handler)
 		logging.getLogger().setLevel(logging.WARNING)
 
-		while True:
-			try:
-				tornadio2.server.SocketServer(application)
-			except KeyboardInterrupt:
-				print "Ctr+C pressed; Exiting."
-				break
-			except Exception, e:
-				logger.exception(e)
+		try:
+			tornadio2.server.SocketServer(application)
+		except KeyboardInterrupt:
+			print "Ctr+C pressed; Exiting."
+		except Exception, e:
+			logger.exception(e)
