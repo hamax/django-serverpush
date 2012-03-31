@@ -19,7 +19,7 @@ except:
 
 setup(
 	name = 'django-serverpush',
-	version = '2.1.0',
+	version = '2.2.0',
 	author = 'Ziga Ham',
 	author_email = 'ziga.ham@gmail.com',
 	packages = ['serverpush', 'serverpush.management', 'serverpush.management.commands'],

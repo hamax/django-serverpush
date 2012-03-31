@@ -7,7 +7,7 @@ logger = logging.getLogger('serverpush')
 def catch_exceptions(func):
 	def wrapper(*arg, **kwarg):
 		try:
-			func(*arg, **kwarg)
+			return func(*arg, **kwarg)
 		except DatabaseError:
 			logger.warning('Database connection failed, trying to recover.')
 			connection.connection.close()

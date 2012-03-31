@@ -9,6 +9,7 @@ import tornadio2.server
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
+from serverpush.cache import patch
 from serverpush.connection import Connection
 from serverpush.notifier import Notifier
 from serverpush.tracker import Tracker
@@ -46,6 +47,9 @@ class Command(BaseCommand):
 			handler.setFormatter(logging.Formatter('%(asctime)-6s:  %(levelname)s - %(message)s'))
 			logging.getLogger().addHandler(handler)
 		logging.getLogger().setLevel(logging.WARNING)
+
+		# patch django orm
+		patch()
 
 		try:
 			tornadio2.server.SocketServer(application)
