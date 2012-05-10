@@ -2,11 +2,14 @@
 	Channel sends notifications to users.
 '''
 
+import pickle
 import time
 from collections import deque
 from bisect import bisect_left
 
 from django.utils import translation
+
+import cache
 
 class Channel():
 	def __init__(self):
@@ -17,7 +20,7 @@ class Channel():
 	# Called from Tracker when a new user connects
 	def newFilter(self, conn, filter):
 		if conn.id not in self.connections: self.connections[conn.id] = []
-		filter = {'name':filter['name'], 'params':filter['params'], 'serializer':filter.get('serializer', extract), 'data':filter['data'], 'conn':conn}
+		filter = {'name':filter['name'], 'params':filter['params'], 'serializer':filter.get('serializer', extract), 'vary':filter.get('vary'), 'data':filter['data'], 'conn':conn}
 		self.connections[conn.id].append(filter)
 		self.sendHistory(filter)
 
@@ -55,8 +58,20 @@ class Channel():
 	# Called by event and sendHistory
 	# serializes data (calls the serializer with right parameters)
 	def serialize(self, filter, object):
-		translation.activate(translation.get_language_from_request(filter['conn'].request))
-		return {'name':filter['name'], 'payload':filter['serializer'](filter['conn'].request, object[0], filter['data'])}
+		lang = translation.get_language_from_request(filter['conn'].request)
+		
+		cache_key = None
+		if filter['vary'] != None and cache.cache:
+			cache_key = pickle.dumps((filter['serializer'], lang, filter['vary']))
+			if cache_key in cache.cache:
+				return cache.cache[cache_key]
+		
+		translation.activate(lang)
+		data = {'name':filter['name'], 'payload':filter['serializer'](filter['conn'].request, object[0], filter['data'])}
+		
+		if cache_key:
+			cache.cache[cache_key] = data
+		return data
 
 #
 # Buffer to send all of the notifications at once
