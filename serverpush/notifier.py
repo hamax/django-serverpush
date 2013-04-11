@@ -2,33 +2,39 @@
 	Event notifier.
 '''
 
-import pickle
+import threading
+import logging
+import functools
 
+import tornado.ioloop
 import tornado.web
+import tornado.httpserver
 
-from cache import cache_start, cache_stop
-from exceptions import catch_exceptions
+from django.conf import settings
+
+logger = logging.getLogger('serverpush')
 
 class Notifier(tornado.web.RequestHandler):
 	def post(self):
 		model = self.get_argument('model', None)
 		id = self.get_argument('id', None)
 
-		cache_start()
-		try:
-			status = self._handle(model, id)
-		except:
-			status = False
-		cache_stop()
+		if model is None or id is None:
+			logger.info('Malformed notification request.')
+			self.write('model and id parameters are required')
+			return
 
-		if status:
-			self.write('ok')
-		else:
-			self.write('fail')
+		tornado.ioloop.IOLoop.instance().add_callback(functools.partial(self.tracker.event, model, id))
 
-	@catch_exceptions
-	def _handle(self, model, id):
-		if model == None or id == None:
-			return False
+		logger.info('Notification added to the queue (%d).', len(tornado.ioloop.IOLoop.instance()._callbacks))
+		self.write('notification added to the queue')
 
-		return self.tracker.event(model, id)
+class NotifierThread(threading.Thread):
+	def run(self):
+		ioloop = tornado.ioloop.IOLoop()
+		application = tornado.web.Application(
+			[(r"/notify", Notifier)],
+		)
+		http_server = tornado.httpserver.HTTPServer(application, io_loop=ioloop)
+		http_server.listen(settings.SERVERPUSH_NOTIFIER_PORT, 'localhost')
+		ioloop.start()

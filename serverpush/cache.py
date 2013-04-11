@@ -2,6 +2,8 @@
 	Cache SQL results during one notification processing.
 '''
 
+from functools import wraps
+
 from django.db.models.sql import compiler
 
 cache = None
@@ -41,3 +43,16 @@ def cache_start():
 def cache_stop():
 	global cache
 	cache = None
+
+def cache_sql(f):
+	@wraps(f)
+	def wrapper(*args, **kwds):
+		cache_start()
+		try:
+			return f(*args, **kwds)
+		except:
+			cache_stop()
+			raise
+		else:
+			cache_stop()
+	return wrapper

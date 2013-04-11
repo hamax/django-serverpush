@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 
 from serverpush.cache import patch
 from serverpush.connection import Connection
-from serverpush.notifier import Notifier
+from serverpush.notifier import Notifier, NotifierThread
 from serverpush.tracker import Tracker
 
 logger = logging.getLogger('serverpush')
@@ -36,23 +36,24 @@ class Command(BaseCommand):
 			socket_io_port = settings.SERVERPUSH_PORT
 		)
 
-		notifier = tornado.web.Application(
-			[(r"/notify", Notifier)],
-		)
-		notifier.listen(settings.SERVERPUSH_NOTIFIER_PORT, 'localhost')
-
 		# configure Tornadio log, serverpush log is configured in settings.py
 		if settings.TORNADIO_LOG:
 			handler = logging.FileHandler(settings.TORNADIO_LOG)
 			handler.setFormatter(logging.Formatter('%(asctime)-6s:  %(levelname)s - %(message)s'))
 			logging.getLogger().addHandler(handler)
-		logging.getLogger().setLevel(logging.WARNING)
+			logging.getLogger().setLevel(logging.WARNING)
 
 		# patch django orm
 		patch()
 
+		logger.info('Serverpush starting up!')
+
+		notifier = NotifierThread()
+		notifier.daemon = True
+
 		try:
-			tornadio2.server.SocketServer(application)
+			notifier.start()
+			tornadio2.server.SocketServer(application)	
 		except KeyboardInterrupt:
 			print "Ctr+C pressed; Exiting."
 		except Exception, e:

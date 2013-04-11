@@ -2,10 +2,16 @@
 	Tracker groups connections and events into channels.
 '''
 
+import time
+import logging
+
 from django.conf import settings
 from django.core.urlresolvers import resolve
 
 from channel import Channel
+from cache import cache_sql
+
+logger = logging.getLogger('serverpush')
 
 class Tracker():
 	def __init__(self):
@@ -21,6 +27,8 @@ class Tracker():
 
 	# Connection calls this method to register itself
 	def connect(self, conn):
+		start_time = time.time()
+
 		# assign id to the connection
 		conn.id = self.next_id
 		self.next_id += 1
@@ -49,6 +57,8 @@ class Tracker():
 			# add filter to the channel
 			self.channels[model].newFilter(conn, filter)
 
+		logger.info('New connection (%s), done in %.2f.', conn.request.path, time.time() - start_time)
+
 	# Connection calls this method to unregister itself
 	def disconnect(self, conn):
 		for channel in self.channels:
@@ -57,7 +67,10 @@ class Tracker():
 
 	# Called by notify.py as a callback via server.py on a new event
 	# notifies other connections and returns success status
+	@cache_sql
 	def event(self, model, id):
+		start_time = time.time()
+
 		# resolve model and id to object
 		try:
 			object = getattr(__import__(model.rsplit('.', 1)[0], globals(), locals(), [model.split('.')[-1]]), model.split('.')[-1]).objects.filter(pk = id)
@@ -73,4 +86,8 @@ class Tracker():
 			self.channels[model] = Channel()
 
 		# pass the job to the channel
-		return self.channels[model].event(object)
+		r = self.channels[model].event(object)
+
+		logger.info('Event (%s:%s), done in %.2f.', model, id, time.time() - start_time)
+
+		return r
