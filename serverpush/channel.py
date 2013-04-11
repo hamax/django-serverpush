@@ -4,12 +4,15 @@
 
 import pickle
 import time
+import logging
 from collections import deque
 from bisect import bisect_left
 
 from django.utils import translation
 
 import cache
+
+logger = logging.getLogger('serverpush')
 
 class Channel():
 	def __init__(self):
@@ -32,7 +35,10 @@ class Channel():
 		for conn in self.connections:
 			for filter in self.connections[conn]:
 				if object.filter(**filter['params']).exists():
-					buffer.append(filter['conn'], self.serialize(filter, object))
+					try:
+						buffer.append(filter['conn'], self.serialize(filter, object))
+					except Exception, e:
+						logger.exception(e)
 		buffer.send()
 
 		return True
@@ -52,7 +58,10 @@ class Channel():
 		for i in range(start, len(self.history)):
 			object = self.history[i][1]
 			if object.filter(**filter['params']).exists():
-				buffer.append(filter['conn'], self.serialize(filter, object))
+				try:
+					buffer.append(filter['conn'], self.serialize(filter, object))
+				except Exception, e:
+					logger.exception(e)
 		buffer.send()
 
 	# Called by event and sendHistory
